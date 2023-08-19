@@ -1,0 +1,189 @@
+#define USE_WIFI_NINA         false
+#define USE_WIFI101           true
+#include <WiFiWebServer.h>
+
+// introduce variables for motors
+int enLeft = 3;
+int dirLeft = 4;
+
+int enRight = 8;
+int dirRight = 9;
+//
+
+const char ssid[] = "Cjp"; //name of network used in testing
+const char pass[] = "12345678"; //password of network used in testing
+const int groupNumber = 0; // Set your group number to make the IP address constant - only do this on the EEERover network
+
+//Webpage to return when root is requested
+//introduce clickable buttons that call the respective function when pressed
+const char webpage[] = \
+"<html><head><style>\
+.btn {background-color: inherit;padding: 14px 28px;font-size: 16px;}\
+.btn:hover {background: #eee;}\
+</style></head>\
+<body>\
+<button class=\"btn\" onclick=\"forward()\">forward</button>\
+<button class=\"btn\" onclick=\"backward()\">backward</button>\
+<button class=\"btn\" onclick=\"left()\">left</button>\
+<button class=\"btn\" onclick=\"right()\">right</button>\
+<button class=\"btn\" onclick=\"stop()\">stop</button>\
+<br>Direction: <span id=\"state\">OFF</span>\
+</body>\
+<script>\
+var xhttp = new XMLHttpRequest();\
+xhttp.onreadystatechange = function() {if (this.readyState == 4 && this.status == 200) {document.getElementById(\"state\").innerHTML = this.responseText;}};\
+function forward() {xhttp.open(\"GET\", \"/forward\"); xhttp.send();}\
+function backward() {xhttp.open(\"GET\", \"/backward\"); xhttp.send();}\
+function left() {xhttp.open(\"GET\", \"/left\"); xhttp.send();}\
+function right() {xhttp.open(\"GET\", \"/right\"); xhttp.send();}\
+function stop() {xhttp.open(\"GET\", \"/stop\"); xhttp.send();}\
+</script></html>";
+
+WiFiWebServer server(80);
+
+//Return the web page
+void handleRoot()
+{
+  server.send(200, F("text/html"), webpage);
+}
+
+//Controls the motors for forward movment
+void forward()
+{
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, HIGH);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, LOW);
+  
+  server.send(200, F("text/plain"), F("forward"));
+}
+
+//Controls the motors for backward movment
+void backward()
+{
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, LOW);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, HIGH);
+
+  server.send(200, F("text/plain"), F("backward"));
+}
+
+//Controls the motors for left movment
+void left()
+{
+  digitalWrite(enLeft, LOW);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, LOW);
+
+  server.send(200, F("text/plain"), F("left"));
+}
+
+//Controls the motors for right movment
+void right()
+{
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, HIGH);
+
+  digitalWrite(enRight, LOW);
+
+  server.send(200, F("text/plain"), F("right"));
+}
+
+//Stops the rover's movment
+void stop()
+{
+  digitalWrite(LED_BUILTIN,1);
+  //
+  digitalWrite(enLeft, LOW);
+
+  digitalWrite(enRight, LOW);
+  //
+  server.send(200, F("text/plain"), F("OFF"));
+}
+
+//Generate a 404 response with details of the failed request
+void handleNotFound()
+{
+  String message = F("File Not Found\n\n"); 
+  message += F("URI: ");
+  message += server.uri();
+  message += F("\nMethod: ");
+  message += (server.method() == HTTP_GET) ? F("GET") : F("POST");
+  message += F("\nArguments: ");
+  message += server.args();
+  message += F("\n");
+  for (uint8_t i = 0; i < server.args(); i++)
+  {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  server.send(404, F("text/plain"), message);
+}
+
+void setup()
+{
+
+  //initialise the left and right motor variables as outputs
+  pinMode(enLeft, OUTPUT);
+  pinMode(dirLeft, OUTPUT);
+
+  pinMode(enRight, OUTPUT);
+  pinMode(dirRight, OUTPUT);
+  // 
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, 0);
+
+  Serial.begin(9600);
+
+  //Wait 10s for the serial connection before proceeding
+  //This ensures you can see messages from startup() on the monitor
+  //Remove this for faster startup when the USB host isn't attached
+  while (!Serial && millis() < 10000);  
+
+  Serial.println(F("\nStarting Web Server"));
+
+  //Check WiFi shield is present
+  if (WiFi.status() == WL_NO_SHIELD)
+  {
+    Serial.println(F("WiFi shield not present"));
+    while (true);
+  }
+
+  //Configure the static IP address if group number is set
+  if (groupNumber)
+    WiFi.config(IPAddress(192,168,0,groupNumber+1));
+
+  // attempt to connect to WiFi network
+  Serial.print(F("Connecting to WPA SSID: "));
+  Serial.println(ssid);
+  while (WiFi.begin(ssid, pass) != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print('.');
+  }
+
+  //Register the callbacks to respond to HTTP requests
+  server.on(F("/"), handleRoot);
+  server.on(F("/forward"), forward);
+  server.on(F("/backward"), backward);
+  server.on(F("/left"), left);
+  server.on(F("/right"), right);
+  server.on(F("/stop"), stop);
+
+  server.onNotFound(handleNotFound);
+  
+  server.begin();
+  
+  Serial.print(F("HTTP server started @ "));
+  Serial.println(static_cast<IPAddress>(WiFi.localIP()));
+}
+
+//Call the server polling function in the main loop
+void loop()
+{
+  server.handleClient();
+}

@@ -1,0 +1,193 @@
+<html>
+<head>
+<style>
+body {
+background-color: #0f0e17;
+align-self: center;
+overflow: hidden;
+font-family: monospace;
+}
+
+h1 {
+justify-content: center;
+text-align: center;
+font-size: large;
+color: #fffffe;
+font-size: 5vh;
+}
+
+ol {
+text-align: center;
+list-style-position: inside;
+padding: 0;
+}
+
+h2 {
+font-size: 3vh;
+text-align: center;
+color: #0f0e17;
+}
+
+button {
+font-weight: bold;
+font-size: medium;
+background-color: #ff8906;
+color: #fffffe;
+border-color: #fffffe;
+border: none;
+outline-width: 1px;
+font-size: 3vh;
+}
+
+li {
+font-size: 2.5vh;
+color: #2e2f3e;
+}
+
+.btn2 {
+border-style: solid;
+border-width: 1px;
+}
+
+button:active {
+background-color: lime;
+}
+
+.top {
+border-radius: 10px 10px 0 0;
+}
+
+.bott {
+border-radius: 0 0 10px 10px;
+}
+
+.SenDat {
+grid-column-start: 1;
+grid-column-end: 4;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+background-color: #fffffe;
+border-radius: 10px;
+}
+
+.SenCtrl {
+display: grid;
+grid-template-rows: 1fr 1fr 1fr;
+}
+
+/* Half of css */
+
+.RovCtrl {
+background-color: #fffffe;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-template-rows: 1fr 1fr 1fr;
+grid-column-start: 1;
+grid-column-end: 3;
+border-radius: 10px;
+}
+
+.ArmCtrl {
+background-color: #fffffe;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-template-rows: 1fr 1fr 1fr;
+grid-column-start: 3;
+grid-column-end: 5;
+border-radius: 10px;
+}
+
+.cont {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr 1fr;
+gap: 10px;
+padding: 5px;
+height: 90%;
+width: auto;
+grid-template-rows: 1fr 1fr;
+}
+
+.Up {
+grid-column-start: 2;
+grid-column-end: 3;
+grid-row-start: 1;
+grid-row-end: 2;
+}
+
+.Down {
+grid-column-start: 2;
+grid-column-end: 3;
+}
+
+.arrow {
+border: solid #fffffe;
+border-width: 0 1vh 1vh 0;
+display: inline-block;
+padding: 1vh;
+}
+
+.right {
+transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+}
+
+.left {
+transform: rotate(135deg);
+-webkit-transform: rotate(135deg);
+}
+
+.up {
+transform: rotate(-135deg);
+-webkit-transform: rotate(-135deg);
+}
+
+.down {
+transform: rotate(45deg);
+-webkit-transform: rotate(45deg);
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Team Naxxor</h1>
+</header>
+<div class="cont">
+<div class="SenDat">
+<div>
+    <h2>Name</h2>
+    <ol id="Name"></ol>
+</div>
+<div>
+    <h2>Age</h2>
+    <ol id="Age"></ol>
+</div>
+<div>
+    <h2>Pole</h2>
+    <ol id="Pole"></ol>
+</div>
+</div>
+<div class="SenCtrl">
+<button class="btn2 top">Radio</button><button class="btn2">IR</button><button
+    class="btn2 bott">Pole</button>
+</div>
+<div class="RovCtrl">
+<div></div>
+<button class="btn1"><i class="arrow up"></i></button>
+<div></div>
+<button class="btn1"><i class="arrow left"></i></button>
+<button class="btn1">ROVER</button><button class="btn1"><i class="arrow right"></i></button>
+<div></div>
+<button class="btn1"><i class="arrow down"></i></button>
+</div>
+<div class="ArmCtrl">
+<div></div>
+<button class="btn3">UP</button>
+<div></div>
+<button class="btn3">ADV</button>
+<button class="btn3">ARM</button><button class="btn3">REV</button>
+<div></div>
+<button class="btn3">DOWN</button>
+</div>
+</div>
+</body>
+</html>

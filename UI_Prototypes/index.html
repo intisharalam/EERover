@@ -1,0 +1,438 @@
+<html>
+
+<head>
+<!--
+<link rel="stylesheet" type="text/css" href="/style.css?c=1">
+<link rel="stylesheet" type="text/css" href="/style.css?c=2">
+-->
+
+<style>
+body {
+background-color: #0f0e17;
+align-self: center;
+overflow: hidden;
+font-family: monospace;
+}
+
+h1 {
+justify-content: center;
+text-align: center;
+font-size: large;
+color: #fffffe;
+font-size: 5vh;
+}
+
+ol {
+text-align: center;
+list-style-position: inside;
+padding: 0;
+}
+
+h2 {
+font-size: 3vh;
+text-align: center;
+color: #0f0e17;
+}
+
+button {
+font-weight: bold;
+font-size: medium;
+background-color: #ff8906;
+color: #fffffe;
+border-color: #fffffe;
+border: none;
+outline-width: 1px;
+font-size: 3vh;
+}
+
+li {
+font-size: 2.5vh;
+color: #2e2f3e;
+}
+
+.btn2 {
+border-style: solid;
+border-width: 1px;
+}
+
+button:active {
+background-color: lime;
+}
+
+.top {
+border-radius: 10px 10px 0 0;
+}
+
+.bott {
+border-radius: 0 0 10px 10px;
+}
+
+.SenDat {
+grid-column-start: 1;
+grid-column-end: 4;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+background-color: #fffffe;
+border-radius: 10px;
+}
+
+.SenCtrl {
+display: grid;
+grid-template-rows: 1fr 1fr 1fr;
+}
+
+/* Half of css */
+
+.RovCtrl {
+background-color: #fffffe;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-template-rows: 1fr 1fr 1fr;
+grid-column-start: 1;
+grid-column-end: 3;
+border-radius: 10px;
+}
+
+.ArmCtrl {
+background-color: #fffffe;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-template-rows: 1fr 1fr 1fr;
+grid-column-start: 3;
+grid-column-end: 5;
+border-radius: 10px;
+}
+
+.cont {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr 1fr;
+gap: 10px;
+padding: 5px;
+height: 90%;
+width: auto;
+grid-template-rows: 1fr 1fr;
+}
+
+.Up {
+grid-column-start: 2;
+grid-column-end: 3;
+grid-row-start: 1;
+grid-row-end: 2;
+}
+
+.Down {
+grid-column-start: 2;
+grid-column-end: 3;
+}
+
+.arrow {
+border: solid #fffffe;
+border-width: 0 1vh 1vh 0;
+display: inline-block;
+padding: 1vh;
+}
+
+.right {
+transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+}
+
+.left {
+transform: rotate(135deg);
+-webkit-transform: rotate(135deg);
+}
+
+.up {
+transform: rotate(-135deg);
+-webkit-transform: rotate(-135deg);
+}
+
+.down {
+transform: rotate(45deg);
+-webkit-transform: rotate(45deg);
+}
+</style>
+</head>
+
+<body>
+<header>
+<h1>Team Naxxor</h1>
+</header>
+<div class="cont">
+<div class="SenDat">
+<div>
+<h2>Name</h2>
+<ol id="Name"></ol>
+</div>
+<div>
+<h2>Age</h2>
+<ol id="Age"></ol>
+</div>
+<div>
+<h2>Pole</h2>
+<ol id="Pole"></ol>
+</div>
+</div>
+<div class="SenCtrl">
+</div>
+<div class="RovCtrl">
+</div>
+<div class="ArmCtrl">
+</div>
+</div>
+</body>
+
+<script>
+var isArrowKeyPressed = false;
+var isSpaceKeyPressed = false;
+var xhttp = new XMLHttpRequest();
+
+
+// Motor control functions
+function up() {
+event.stopPropagation();
+event.preventDefault(); 
+xhttp.open("GET", "/up");
+xhttp.send();
+console.log("Pressed!")
+}
+function down() { 
+event.stopPropagation();
+event.preventDefault();
+xhttp.open("GET", "/down");
+xhttp.send();
+console.log("Pressed!");
+}
+function left() { 
+event.stopPropagation();
+event.preventDefault();
+xhttp.open("GET", "/left");
+xhttp.send();
+console.log("Pressed!");
+}
+function right() { 
+event.stopPropagation();
+event.preventDefault();
+xhttp.open("GET", "/right");
+xhttp.send();
+console.log("Pressed!")
+}
+function stop() { 
+event.stopPropagation();
+event.preventDefault();
+xhttp.open("GET", "/stop");
+xhttp.send();
+}
+
+
+// Sensor Button handlers
+function sendButtonClick(sensor){
+    event.stopPropagation();
+    event.preventDefault();
+
+    var ipAddress = window.location.hostname;
+    var url = "http://" + ipAddress + "/" + sensor;
+    fetch(url)
+    .then(response => {
+        if(response.ok){
+            response.text().then(value => addDataToList(sensor, value));
+        }
+    });
+}
+function addDataToList(sensor, value){
+    var olElement = document.getElementById(sensor);
+    var liElement = document.createElement('li');
+    liElement.textContent = value;
+    olElement.appendChild(liElement);
+}
+
+
+var isIncrementing = false;
+var isDecrementing = false;
+var servoInterval;
+function ServoIncrY() {
+event.stopPropagation();
+event.preventDefault();
+if (!isIncrementing) {
+isIncrementing = true;
+servoInterval = setInterval(incrementServoY, 15);
+}
+}
+function ServoIncrZ() {
+event.stopPropagation();
+event.preventDefault();
+if (!isIncrementing) {
+isIncrementing = true;
+servoInterval = setInterval(incrementServoZ, 15);
+}
+}
+function ServoDecrY() {
+event.stopPropagation();
+event.preventDefault();
+if (!isDecrementing) {
+isDecrementing = true;
+servoInterval = setInterval(decrementServoY, 15);
+}
+}
+function ServoDecrZ() {
+event.stopPropagation();
+event.preventDefault();
+if (!isDecrementing) {
+isDecrementing = true;
+servoInterval = setInterval(decrementServoZ, 15);
+}
+}
+function incrementServoY() {
+xhttp.open("GET", "/IncrY");
+xhttp.send();
+}
+function decrementServoY() { 
+xhttp.open("GET", "/DecrY");
+xhttp.send();
+}
+function incrementServoZ() {
+xhttp.open("GET", "/IncrZ");
+xhttp.send();
+}
+function decrementServoZ() { 
+xhttp.open("GET", "/DecrZ");
+xhttp.send();
+}
+function stopContinuous() {
+if (isIncrementing) {
+isIncrementing = false;
+}
+if (isDecrementing) {
+isDecrementing = false;
+}
+clearInterval(servoInterval);
+}
+var radBtn = document.createElement("button");
+var irBtn = document.createElement("button");
+var poleBtn = document.createElement("button");
+radBtn.textContent = "Radio";
+radBtn.className = "btn2 top";
+irBtn.textContent = "IR";
+irBtn.className = "btn2";
+poleBtn.textContent = "Pole";
+poleBtn.className = "btn2 bott";
+radBtn.addEventListener('touchstart', function() {sendButtonClick("Radio");});
+radBtn.addEventListener('mousedown', function() {sendButtonClick("Radio");});
+irBtn.addEventListener('touchstart', function() {sendButtonClick("IR");});
+irBtn.addEventListener('mousedown', function() {sendButtonClick("IR");});
+poleBtn.addEventListener('touchstart', function() {sendButtonClick("Pole");});
+poleBtn.addEventListener('mousedown', function() {sendButtonClick("Pole");});
+var senCtrlDiv = document.querySelector(".SenCtrl");
+senCtrlDiv.appendChild(radBtn);
+senCtrlDiv.appendChild(irBtn);
+senCtrlDiv.appendChild(poleBtn);
+var arrUpBtn = document.createElement("button");
+var arrDownBtn = document.createElement("button");
+var arrRightBtn = document.createElement("button");
+var arrLeftBtn = document.createElement("button");
+var fillDiv1 = document.createElement("div");
+var fillDiv2 = document.createElement("div");
+var fillDiv3 = document.createElement("div");
+var fillBtn = document.createElement("button")
+arrUpBtn.className = "btn1";
+arrDownBtn.className = "btn1";
+
+arrRightBtn.className = "btn1";
+arrLeftBtn.className = "btn1";
+fillBtn.textContent = "ROVER";
+fillBtn.className = "btn1";
+var arrowIconUp = document.createElement("i");
+var arrowIconLeft = document.createElement("i");
+var arrowIconRight = document.createElement("i");
+var arrowIconDown = document.createElement("i");
+arrowIconUp.className = "arrow up";
+arrowIconLeft.className = "arrow left";
+arrowIconRight.className = "arrow right";
+arrowIconDown.className = "arrow down";
+arrUpBtn.appendChild(arrowIconUp);
+arrDownBtn.appendChild(arrowIconDown);
+arrRightBtn.appendChild(arrowIconRight);
+arrLeftBtn.appendChild(arrowIconLeft);
+arrUpBtn.addEventListener('touchstart', up);
+arrUpBtn.addEventListener('mousedown', up);
+arrDownBtn.addEventListener('touchstart', down);
+arrDownBtn.addEventListener('mousedown', down);
+arrLeftBtn.addEventListener('touchstart', left);
+arrLeftBtn.addEventListener('mousedown', left);
+arrRightBtn.addEventListener('touchstart', right);
+arrRightBtn.addEventListener('mousedown', right);
+var rovCtrlDiv = document.querySelector(".RovCtrl");
+rovCtrlDiv.appendChild(fillDiv1);
+rovCtrlDiv.appendChild(arrUpBtn);
+rovCtrlDiv.appendChild(fillDiv2);
+rovCtrlDiv.appendChild(arrLeftBtn);
+rovCtrlDiv.appendChild(fillBtn);
+rovCtrlDiv.appendChild(arrRightBtn);
+rovCtrlDiv.appendChild(fillDiv3);
+rovCtrlDiv.appendChild(arrDownBtn);
+
+var upBtn = document.createElement("button");
+var downBtn = document.createElement("button");
+var advBtn = document.createElement("button");
+var revBtn = document.createElement("button");
+var fillDiv4 = document.createElement("div");
+var fillDiv5 = document.createElement("div");
+var fillDiv6 = document.createElement("div");
+var fillBtn1 = document.createElement("button")
+upBtn.textContent = "UP";
+upBtn.className = "btn3";
+downBtn.textContent = "DOWN";
+downBtn.className = "btn3";
+advBtn.textContent = "ADV";
+advBtn.className = "btn3";
+revBtn.textContent = "REV";
+revBtn.className = "btn3";
+fillBtn1.textContent = "ARM";
+fillBtn1.className = "btn3";
+upBtn.addEventListener('touchstart', ServoIncrY);
+upBtn.addEventListener('mousedown', ServoIncrY);
+downBtn.addEventListener('touchstart', ServoDecrY);
+downBtn.addEventListener('mousedown', ServoDecrY);
+advBtn.addEventListener('touchstart', ServoIncrZ);
+advBtn.addEventListener('mousedown', ServoIncrZ);
+revBtn.addEventListener('touchstart', ServoDecrZ);
+revBtn.addEventListener('mousedown', ServoDecrZ);
+var armCtrlDiv = document.querySelector(".ArmCtrl");
+var armCtrlDiv = document.querySelector(".ArmCtrl");
+armCtrlDiv.appendChild(fillDiv4);
+armCtrlDiv.appendChild(upBtn);
+armCtrlDiv.appendChild(fillDiv5);
+armCtrlDiv.appendChild(advBtn);
+armCtrlDiv.appendChild(fillBtn1);
+
+armCtrlDiv.appendChild(revBtn);
+armCtrlDiv.appendChild(fillDiv6);
+armCtrlDiv.appendChild(downBtn);
+document.addEventListener("keydown", function (event) {
+var keyCode = event.keyCode; if (keyCode === 37) { left(); isArrowKeyPressed = true; } else if (keyCode === 38) { up(); isArrowKeyPressed = true; } else if (keyCode === 39) { right(); isArrowKeyPressed = true; } else if (keyCode === 40) { down(); isArrowKeyPressed = true; }
+});
+document.addEventListener("keyup", function (event) { var keyCode = event.keyCode; if (keyCode >= 37 && keyCode <= 40) { isArrowKeyPressed = false; } else if (keyCode === 32) { isSpaceKeyPressed = false; } if (!isArrowKeyPressed && !isSpaceKeyPressed) { stop(); } });
+
+var buttons = document.getElementsByClassName("btn1");
+for (var i = 0; i < buttons.length; i++) {
+var button = buttons[i]; button.addEventListener("mouseup", function (event) { event.preventDefault();stop(); });
+button.addEventListener("touchend", function (event) { event.preventDefault(); stop(); });
+}
+
+buttons = document.getElementsByClassName("btn3");
+for (var i = 0; i < buttons.length; i++) {
+var button = buttons[i]; button.addEventListener("mouseup", function (event) {event.preventDefault();stopContinuous(); });
+button.addEventListener("touchend", function (event) { event.preventDefault();stopContinuous(); });
+}
+</script>
+
+<!--
+<script src="/script.js?c=1"></script>
+<script src="/script.js?c=2"></script>
+<script src="/script.js?c=3"></script>
+<script src="/script.js?c=4"></script>
+<script src="/script.js?c=5"></script>
+<script src="/script.js?c=6"></script>
+-->
+
+</html>

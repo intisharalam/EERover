@@ -1,0 +1,69 @@
+//introduce variables and assign them a pin on the microcontroller
+int enLeft = 3;
+int dirLeft = 4;
+
+int enRight = 8;
+int dirRight = 9;
+
+//set the pins as outputs
+void setup() {
+
+  pinMode(enLeft, OUTPUT);
+  pinMode(dirLeft, OUTPUT);
+
+  pinMode(enRight, OUTPUT);
+  pinMode(dirRight, OUTPUT);
+
+}
+
+//Carries out forward movement
+void forward(){
+  
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, HIGH);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, LOW);
+
+}
+
+//Carries out backward movement
+void backward(){
+  
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, LOW);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, HIGH);
+
+}
+
+//Carries out right movement
+void right(){
+  
+  digitalWrite(enLeft, HIGH);
+  digitalWrite(dirLeft, HIGH);
+
+  digitalWrite(enRight, LOW);
+
+}
+
+//Carries out left movement
+void left(){
+  
+  digitalWrite(enLeft, LOW);
+
+  digitalWrite(enRight, HIGH);
+  digitalWrite(dirRight, LOW);
+
+}
+
+//carries out the movement fucntions in a chosen, repeated order
+void loop() {
+
+forward();
+delay(1000);
+backward();
+delay(1000);
+
+}
